@@ -1,2 +1,2 @@
-# calculadorasimbolicaempython
-Calculadora simbólica em python para o projeto de Programação Orientada a Objetos
+# AlgeCalc
+Calculadora simbólica e gráfica em python para o projeto de Programação Orientada a Objetos
