@@ -188,22 +188,23 @@ def NovoGrafico2D():
 		LimiteEsquerdo = TextBox(BarraDeConfigs, text="-5", width=5, height="fill", align="left")
 		Text(BarraDeConfigs, text="Lim Direito:", align="left")
 		LimiteDireito = TextBox(BarraDeConfigs, text="5", width=5, height="fill", align="left")
-		Legenda = CheckBox(BarraDeConfigs, text="Legendas", align="right")
+		Text(BarraDeConfigs, text="DPI:", align="left")
+		DPI = TextBox(BarraDeConfigs, text="90", width=5, height="fill", align="left")
 		AreaLinhas = Box(Grafico, align="top", layout="auto", height=1, width="fill")
 		AreaGrafico = Box(Grafico, align="top", layout="auto", border=1, height="fill", width="fill")
 		AreaGrafico.bg = "white"
-		M.Grafico.append(PainelGrafico2D(Grafico, OpcoesDeEixo, LimiteEsquerdo, LimiteDireito, INDEX, AreaLinhas, Legenda, AreaGrafico))
+		M.Grafico.append(PainelGrafico2D(Grafico, OpcoesDeEixo, LimiteEsquerdo, LimiteDireito, INDEX, AreaLinhas, AreaGrafico, DPI))
 		def NovaLinha(A):
 			M.Grafico[A].CriaLinha()
 			M.UpdateConteudoGrafico()
 		PushButton(NovaLinhaBox, text="Nova Linha", align="left", command=NovaLinha, args=[INDEX])
-		PushButton(NovaLinhaBox, text="Renderizar", align="left", command=M.Grafico[INDEX].ImprimeGrafico)
+		PushButton(NovaLinhaBox, text="Renderizar", align="left", command=M.Grafico[INDEX].RenderGraf)
 		M.ContadorGraficos = M.ContadorGraficos+1
 	
 PushButton(BarraGrafica, text="Plot 2D", align="left", command=NovoGrafico2D)
-PushButton(BarraGrafica, text="Plot 3D", align="left")
-PushButton(BarraGrafica, text="Animação 2D", align="left")
-PushButton(BarraGrafica, text="Animação 3D", align="left")
+PushButton(BarraGrafica, text="Plot 3D", align="left", enabled=False)
+PushButton(BarraGrafica, text="Animação 2D", align="left", enabled=False)
+PushButton(BarraGrafica, text="Animação 3D", align="left", enabled=False)
 
 def HabilitaFuncional():
 	ModuloFuncional.visible = True
@@ -230,9 +231,6 @@ def PrimeiraPaginaGrafica():
 	M.MudaPaginaGrafica()
 	M.UpdateConteudoGrafico()
 PushButton(BarraGrafica, text="←←", align="right", command=PrimeiraPaginaGrafica)
-
-
-
 
 #Cria uma linha de memória e abre a janela principal
 NovaLinha()
