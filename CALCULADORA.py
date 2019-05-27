@@ -1,7 +1,7 @@
 from sympy import *
 import numpy as np
-from sympy import symbols
-
+import matplotlib.pyplot as plt
+from sympy.plotting import plot
 from guizero import *
 import LISTA
 MF = []
@@ -22,13 +22,13 @@ ListaDeOperacoes = ["Variável Contínua",
 					"EDO",
 					"Substituir",
 					"----------------",
-						"Integral",
+					"Integral",
 					"Derivada",
 					"----------------",
-						"Somatório",
+					"Somatório",
 					"Transf. Laplace",
 					"Transf. Inv. Laplace",
-						"----------------",
+					"----------------",
 					"Latex"
 					]
 
@@ -482,17 +482,9 @@ class LinhaGrafica2D:
 		for i in range(0, len(LISTADEEXPRESSOES)):
 			self.ExpOpt.append(LISTADEEXPRESSOES[i])
 			self.CONTADOR = self.CONTADOR+1 
-			
-	def Calcula(self, VETOR, VARIAVEL):
-		if VARIAVEL != "Nenhuma":
-			FUNC = lambdify(eval(ParseInput(VARIAVEL)),eval(ParseInput(self.ExpOpt.value)), 'numpy')
-			return FUNC(VETOR)
-		else:
-			return np.zeros(len(VETOR))
-	
 	
 class PainelGrafico2D:
-	def __init__(self, Grafico, OpcoesDeVariaveis, LimiteEsquerdo, LimiteDireito, INDEX, AreaLinhas, Legenda, AreaGrafico):
+	def __init__(self, Grafico, OpcoesDeVariaveis, LimiteEsquerdo, LimiteDireito, INDEX, AreaLinhas, AreaGrafico, DPI):
 		
 		self.Indice = str(INDEX)
 		self.NomeGrafico = "Grafico" + str(INDEX) + ".png"
@@ -502,10 +494,10 @@ class PainelGrafico2D:
 		self.LimiteDireito = LimiteDireito
 		self.INDEX = INDEX
 		self.AreaLinhas = AreaLinhas
-		self.Legenda = Legenda
 		self.ListaLinhas = []
 		self.AreaGrafico = AreaGrafico
 		self.GraficoEmSi = 0
+		self.DPI = DPI
 		
 	def CriaLinha(self):
 		self.AreaLinhas.resize("fill", self.AreaLinhas.height+25)
@@ -530,29 +522,31 @@ class PainelGrafico2D:
 		for i in range(0, len(self.ListaLinhas)):
 			self.ListaLinhas[i].Update(EXPRESSOES)
 
-	def CalculaTudo(self):
-		DRAWLINE = []
-		if len(self.ListaLinhas) !=0:
-			for i in range(0, len(self.ListaLinhas)):
-				plot = plot(
-						color=('#'+str(self.ListaLinhas[i].CorOpt.value)),
-						linewidth=int(self.ListaLinhas[i].EspOpt.value),
-						linestyle=str(self.ListaLinhas[i].EstOpt.value),
-						label=str(self.ListaLinhas[i].ExpOpt.value))
-				if int(self.Legenda.value):
-					plot.legend()
-		plt.savefig("Recursos\\" + self.NomeGrafico, bbox_inches='tight')
-		plt.close()
+	def RenderGraf(self):
+		if self.OpcoesDeVariaveis.value != "Nenhuma":
+			var = eval(ParseInput(self.OpcoesDeVariaveis.value))
+			for i in range(0,len(self.ListaLinhas)):
+				if self.ListaLinhas[i].ExpOpt.value != "Nenhuma":
+					tempfun = eval(ParseInput(self.ListaLinhas[i].ExpOpt.value))
+					Color = []
+					Color.append(float.fromhex(self.ListaLinhas[i].CorOpt.value[2:3]))
+					Color.append(float.fromhex(self.ListaLinhas[i].CorOpt.value[2:3]))
+					Color.append(float.fromhex(self.ListaLinhas[i].CorOpt.value[4:5]))
+					if i == 0:
+						Grafico = plot(tempfun, (var, self.LimiteEsquerdo.value, self.LimiteDireito.value), show=False)
+					else:
+						Linha = plot(tempfun, (var, self.LimiteEsquerdo.value, self.LimiteDireito.value), show=False)
+						Linha.color = var, (Color[0])
+						Grafico.extend(Linha)
+			backend = Grafico.backend(Grafico)
+			backend.process_series()
+			backend.fig.savefig("Recursos\\" + self.NomeGrafico, dpi=int(self.DPI.value))
+			if self.GraficoEmSi !=0:
+				self.GraficoEmSi.destroy()
+				self.GraficoEmSi =0
+			self.GraficoEmSi = Picture(self.AreaGrafico, "Recursos\\" + self.NomeGrafico)
+		else:
+			if self.GraficoEmSi !=0:
+				self.GraficoEmSi.destroy()
+				self.GraficoEmSi =0
 			
-
-			
-
-
-				
-	def ImprimeGrafico(self):
-		self.CalculaTudo()
-		if self.GraficoEmSi !=0:
-			self.GraficoEmSi.destroy()
-		self.GraficoEmSi = Picture(self.AreaGrafico, "Recursos\\" + self.NomeGrafico)
-		self.GraficoEmSi.rcParams['figure.figsize'] = 12, 6
-		
