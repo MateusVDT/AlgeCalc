@@ -1,2 +1,2 @@
-# AlgeCalc
-Calculadora simbólica e gráfica em python para o projeto de Programação Orientada a Objetos
+#PyzzaCalc
+Interface para a biblioteca de matemática simbólica Sympy.
